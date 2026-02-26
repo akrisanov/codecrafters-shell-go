@@ -16,7 +16,11 @@ func main() {
 		// read command and its arguments from stdin
 		input, err := reader.ReadString('\n')
 		if err != nil {
-			panic(err)
+			if err.Error() == "EOF" {
+				os.Exit(0)
+			}
+			fmt.Fprintf(os.Stderr, "Error reading input: %v\n", err)
+			os.Exit(1)
 		}
 		// parse command and arguments
 		command, args := parseCommand(input)
@@ -25,19 +29,21 @@ func main() {
 	}
 }
 
+// parseCommand splits the input into command and its arguments
 func parseCommand(input string) (string, []string) {
 	fields := strings.Fields(input)
 	if len(fields) == 0 {
 		return "", nil
 	}
 	command := fields[0]
-	var args []string
+	args := make([]string, 0, len(fields)-1)
 	for _, arg := range fields[1:] {
 		args = append(args, strings.ReplaceAll(arg, "\"", ""))
 	}
 	return command, args
 }
 
+// handleCommand executes the given command with its arguments
 func handleCommand(command string, args ...string) {
 	if command == "" {
 		return
