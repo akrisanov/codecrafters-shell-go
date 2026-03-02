@@ -4,8 +4,15 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 )
+
+var builtins = map[string]struct{}{
+	"echo": {},
+	"exit": {},
+	"type": {},
+}
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
@@ -54,6 +61,10 @@ func handleCommand(command string, args ...string) {
 	case "echo":
 		fmt.Println(strings.Join(args, " "))
 	case "type":
+		if len(args) == 0 {
+			fmt.Println("type: missing argument")
+			return
+		}
 		handleTypeCommand(args[0])
 	default:
 		fmt.Printf("%s: command not found\n", command)
@@ -62,10 +73,13 @@ func handleCommand(command string, args ...string) {
 
 // handleTypeCommand determines how a command would be interpreted if it were used.
 func handleTypeCommand(commandName string) {
-	switch commandName {
-	case "echo", "exit", "print", "type":
+	if _, ok := builtins[commandName]; ok {
 		fmt.Printf("%s is a shell builtin\n", commandName)
-	default:
-		fmt.Printf("%s: not found\n", commandName)
+		return
 	}
+	if fullPath, err := exec.LookPath(commandName); err == nil {
+		fmt.Printf("%s is %s\n", commandName, fullPath)
+		return
+	}
+	fmt.Printf("%s: not found\n", commandName)
 }
