@@ -29,7 +29,7 @@ func main() {
 	}
 }
 
-// parseCommand splits the input into command and its arguments
+// parseCommand splits the input into command and its arguments.
 func parseCommand(input string) (string, []string) {
 	fields := strings.Fields(input)
 	if len(fields) == 0 {
@@ -43,7 +43,7 @@ func parseCommand(input string) (string, []string) {
 	return command, args
 }
 
-// handleCommand executes the given command with its arguments
+// handleCommand executes the given command with its arguments.
 func handleCommand(command string, args ...string) {
 	if command == "" {
 		return
@@ -53,7 +53,19 @@ func handleCommand(command string, args ...string) {
 		os.Exit(0)
 	case "echo":
 		fmt.Println(strings.Join(args, " "))
+	case "type":
+		handleTypeCommand(args[0])
 	default:
 		fmt.Printf("%s: command not found\n", command)
+	}
+}
+
+// handleTypeCommand determines how a command would be interpreted if it were used.
+func handleTypeCommand(commandName string) {
+	switch commandName {
+	case "echo", "exit", "print":
+		fmt.Printf("%s is a shell builtin\n", commandName)
+	default:
+		fmt.Printf("%s: not found\n", commandName)
 	}
 }
