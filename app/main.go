@@ -91,7 +91,8 @@ func runExecutable(command string, args ...string) {
 		fmt.Printf("%s: command not found\n", command)
 		return
 	}
-	cmd := exec.Command(fullPath, args...)
+	cmd := exec.Command(fullPath)
+	cmd.Args = append([]string{command}, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
