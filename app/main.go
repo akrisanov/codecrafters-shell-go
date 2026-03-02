@@ -63,7 +63,7 @@ func handleCommand(command string, args ...string) {
 // handleTypeCommand determines how a command would be interpreted if it were used.
 func handleTypeCommand(commandName string) {
 	switch commandName {
-	case "echo", "exit", "print":
+	case "echo", "exit", "print", "type":
 		fmt.Printf("%s is a shell builtin\n", commandName)
 	default:
 		fmt.Printf("%s: not found\n", commandName)
