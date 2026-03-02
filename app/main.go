@@ -67,19 +67,34 @@ func handleCommand(command string, args ...string) {
 		}
 		handleTypeCommand(args[0])
 	default:
-		fmt.Printf("%s: command not found\n", command)
+		runExecutable(command, args...)
 	}
 }
 
 // handleTypeCommand determines how a command would be interpreted if it were used.
-func handleTypeCommand(commandName string) {
-	if _, ok := builtins[commandName]; ok {
-		fmt.Printf("%s is a shell builtin\n", commandName)
+func handleTypeCommand(command string) {
+	if _, ok := builtins[command]; ok {
+		fmt.Printf("%s is a shell builtin\n", command)
 		return
 	}
-	if fullPath, err := exec.LookPath(commandName); err == nil {
-		fmt.Printf("%s is %s\n", commandName, fullPath)
+	if fullPath, err := exec.LookPath(command); err == nil {
+		fmt.Printf("%s is %s\n", command, fullPath)
 		return
 	}
-	fmt.Printf("%s: not found\n", commandName)
+	fmt.Printf("%s: not found\n", command)
+}
+
+// runExecutable finds and runs the executable corresponding to the given command name and arguments.
+func runExecutable(command string, args ...string) {
+	fullPath, err := exec.LookPath(command)
+	if err != nil {
+		fmt.Printf("%s: command not found\n", command)
+		return
+	}
+	cmd := exec.Command(fullPath, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error executing %s: %v\n", command, err)
+	}
 }
