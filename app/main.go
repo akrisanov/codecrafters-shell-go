@@ -12,6 +12,7 @@ var builtins = map[string]struct{}{
 	"echo": {},
 	"exit": {},
 	"type": {},
+	"pwd":  {},
 }
 
 func main() {
