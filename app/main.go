@@ -66,6 +66,8 @@ func handleCommand(command string, args ...string) {
 			return
 		}
 		handleTypeCommand(args[0])
+	case "pwd":
+		handlePwdCommand()
 	default:
 		runExecutable(command, args...)
 	}
@@ -98,4 +100,14 @@ func runExecutable(command string, args ...string) {
 	if err := cmd.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error executing %s: %v\n", command, err)
 	}
+}
+
+// handlePwdCommand prints the current working directory.
+func handlePwdCommand() {
+	cwd, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting current directory: %v\n", err)
+		return
+	}
+	fmt.Println(cwd)
 }
